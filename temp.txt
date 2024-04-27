@@ -1,0 +1,8 @@
+disp:
+    mov ah,0x0e
+    mov al,[buffer]
+    int 0x10
+    inc al
+    cmp al,13
+    jge exit
+    jmp disp
