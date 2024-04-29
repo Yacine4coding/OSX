@@ -1,27 +1,52 @@
+[org 0x7c00]
 
+;Print msg
 
+mov bx,msg
+mov cx,16
+mov ah,0x0e
+call PrntMsg
 
-mov cx,13
+;Get String
+mov cx,5
+mov bx,buffer
+call GetChar
 
-loop:
+;Print string
+mov cx,5
+mov bx,buffer
+
+call PrntMsg
+
+jmp exit
+
+PrntMsg:
+    mov ah,0x0e
+    mov al,[bx]
+    int 0x10
+    inc bx
+    dec cx
+    cmp cx,0
+    jg PrntMsg
+    ret
+
+GetChar:
     mov ah,0
     int 0x16
-    mov bh,al
-    call dispChar
+    mov [bx],al
+    inc bx
+    dec cx
+    cmp cx,0
+    jg GetChar
+    ret
 
-    loop loop
+msg:
+    db "Enter your Name:",0
 
-dispChar:
-    mov ah,0x0e
-    mov al,bh
-    int 0x10
-    ret 
+buffer:
+    times 5 db 0
 
-
-Dcmp:
-    idiv bx,10
-
-    
-jmp $
+exit:
+    jmp $
 times 510-($-$$) db 0
 db 0x55, 0xaa
