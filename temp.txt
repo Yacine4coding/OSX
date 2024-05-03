@@ -46,3 +46,131 @@ pop bx
     mov ah, 0x0e    
     mov al, byte [bx] ; 
     int 0x10h
+
+
+
+[org 0x7c00]
+
+;Print msg
+
+mov bx,msg
+mov cx,16
+mov ah,0x0e
+call PrntMsg
+
+;Get String
+mov cx,5
+mov bx,buffer
+call GetChar
+
+;Print string
+mov cx,5
+mov bx,buffer
+
+call PrntMsg
+
+jmp exit
+
+PrntMsg:
+    mov ah,0x0e
+    mov al,[bx]
+    int 0x10
+    inc bx
+    dec cx
+    cmp cx,0
+    jg PrntMsg
+    ret
+
+GetChar:
+    mov ah,0
+    int 0x16
+    mov [bx],al
+    inc bx
+    dec cx
+    cmp cx,0
+    jg GetChar
+    ret
+
+msg:
+    db "Enter your Name:",0
+
+buffer:
+    times 5 db 0
+
+exit:
+    jmp $
+times 510-($-$$) db 0
+db 0x55, 0xaa
+
+
+[org 0x7c00] 
+
+
+diskNum equ 0
+
+mov ah, 2
+mov al, 1 
+
+mov ch, 0         
+mov dh, 0        
+mov cl, 2         
+
+
+mov dl, diskNum
+
+mov bx, 0x7e00    
+mov es, 0         
+int 0x13         
+
+; (Optional) Check for error after reading sectors
+; You can add code to handle errors here
+
+mov ah, 0x0e     
+mov al, [bx]       
+int 0x10         
+jmp $     
+
+
+times 510-($-$$) db 0
+
+
+db 0x55, 0xaa
+
+
+times 512 db 'A'
+
+
+
+
+
+
+
+
+
+------------------------------------------
+[org 0x7c00]
+
+
+
+mov ah, 2
+mov al, 1
+
+mov ch, 0
+mov dh, 0
+mov cl, 2
+
+mov dl, [diskNum] 
+
+mov bx, 0x7e00
+mov es, 0
+int 0x13
+
+mov ah, 0x0e
+mov al, [0x7e00]
+int 0x10
+
+
+jmp $
+times 510-($-$$) db 0
+db 0x55, 0xaa
+times 512 db 'A'
